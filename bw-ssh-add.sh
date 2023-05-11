@@ -2,6 +2,14 @@
 
 FOLDER_NAME="SSHAgent"
 
+# Ensure the ssh-agent is running
+ssh-add -l &>/dev/null
+if [ "$?" == 2 ]; then
+	echo "ssh-agent is not running, exiting."
+	exit 1
+fi
+
+
 IDS=$(rbw list --fields folder,id | grep "^$FOLDER_NAME" | cut -f2)
 while read ID ; do
 	read -d "\n" NAME PASS <<< $(rbw get $ID --raw | jq -r '.fields[].value')
